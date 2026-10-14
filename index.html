@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can AI Really Fly the SOC?</title>
+<meta name="description" content="A simple blog post on whether the AI-run 'SOC pilot' model is realistic and responsible.">
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --ink: #1F1F1F;
+    --muted: #555555;
+    --line: #CCCCCC;
+    --box: #F0F0F0;
+    --link: #1A55B0;
+    --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 62.5rem;
+    margin: 0 auto;
+    padding: 2.5rem 16px 4rem;
+  }
+
+  .byline { margin: 0 0 1.2rem; color: var(--muted); font-size: 0.9em; }
+
+  h1 {
+    margin: 0 0 1.4rem;
+    font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.3rem);
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  h2 {
+    margin: 2.4rem 0 1.2rem;
+    font-size: clamp(1.4rem, 1.15rem + 0.9vw, 1.75rem);
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  p { margin: 0 0 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0 0; }
+
+  ul, ol { margin: 0 0 1.2rem; padding-left: 3rem; }
+  li { margin-bottom: 0.15rem; }
+
+  a { color: var(--link); }
+
+  .box {
+    margin: 0 0 1.4rem;
+    padding: 1rem 1.25rem;
+    background: var(--box);
+    text-align: center;
+  }
+
+  .refs p {
+    padding-left: 2em;
+    text-indent: -2em;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 480px) {
+    ul, ol { padding-left: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<main class="page">
+
+  <p class="byline">Raymund Fergie L. Uygioco · CS31</p>
+
+  <h1>Can AI Really Fly the SOC? A Simple Look at the SOC Pilot Idea</h1>
+
+  <p>In this blog post, I look at an IBM article that compares the future security operations center to a modern airliner. I explain where AI can safely act on its own, where people still need to decide, what happens when the AI's information is wrong, and what skills I need to stay in the "pilot's seat."</p>
+
+  <hr>
+
+  <h2>What is a "SOC pilot"?</h2>
+  <p>A Security Operations Center, or SOC, is the team that watches a company's computers and networks for attacks. Its tools send out thousands of alerts every day. Most are harmless, a few are real, and the hard part is telling them apart in time.</p>
+  <p>In his IBM article, <a href="https://www.ibm.com/think/insights/agentic-ai-enables-autonomous-soc" target="_blank" rel="noopener">John Velisaris (2025)</a> says the SOC should work like a modern airliner. On a plane, the autopilot does most of the flying, and the pilot takes over only when something unusual happens. Velisaris wants the same for security: AI agents handle everyday alerts, and human analysts become "SOC pilots" who step in when something new appears, like a zero-day attack nobody has seen before.</p>
+  <p>He makes a second point that I think matters just as much. Automation fails without context. An AI agent cannot decide what to do with an alert until it knows what kind of device is affected. Shutting down an ordinary laptop is fine. Shutting down a critical server could stop a whole business.</p>
+  <p>In this post, I ask two simple questions. Is the SOC pilot model realistic? Is it responsible? My short answer is <b>yes, but only if we are careful about where AI acts alone, and only if the information it depends on is correct.</b></p>
+
+  <h2>Is the SOC pilot model realistic?</h2>
+  <p>Partly, yes. Some of it already works today. Velisaris (2025) explains that automation is common in closed systems, like endpoint detection and response (EDR) tools, because the tool already knows everything about the devices it protects. He gives the example of a large cloud company that needs very little SOC involvement because it knows every technology and asset it runs.</p>
+  <p>IBM's own system, called ATOM, goes a step further. When an alert comes in, it builds a task list for the investigation. If it is missing facts about the device, it asks other AI agents, such as the vulnerability scanner or the asset database, to fill the gap. It then decides, for example, that a device is a workstation based on its name and network location, and picks a response (Velisaris, 2025). That is the same reasoning a junior analyst would follow.</p>
+  <p>But the article is also honest about the limits. Velisaris (2025) admits it is still unknown whether AI will really move analysts into the pilot's chair, and that fully autonomous SOCs do not exist yet. Most companies are not neat closed systems. They have old servers, cloud accounts, personal phones, and devices nobody remembers buying.</p>
+  <p>So I see the SOC pilot model as a realistic direction, not something a company can switch on tomorrow. The routine parts can be automated now. The "pilot" part depends on whether the rest of the company is organized enough for AI to understand it.</p>
+
+  <h2>Where AI can safely act on its own</h2>
+  <p>AI can act alone when three things are true: the task is routine, the facts are clear, and the action is easy to undo. I use one simple question to decide:</p>
+
+  <div class="box">If the AI gets this wrong, how bad is it, and how fast can we fix it?</div>
+
+  <p>If the answer is "not very bad" and "in minutes," the machine can handle it. Here are tasks that pass that test:</p>
+  <ul>
+    <li><b>Sorting the noise:</b> closing duplicate alerts and obvious false alarms, with a record of why.</li>
+    <li><b>Gathering facts:</b> looking up who owns a device, whether an IP address is known to be bad, and who logged in recently.</li>
+    <li><b>Blocking known threats:</b> stopping a file or website that is already on a trusted list of malware or phishing.</li>
+    <li><b>Isolating an ordinary workstation:</b> cutting a normal laptop off the network when it is clearly running known malware. This is the exact example Velisaris (2025) gives: a playbook can quarantine a device if it is not a server and shows known malicious activity.</li>
+  </ul>
+  <p>Every action should still be logged so a human can check it later. This matches the airline picture. Autopilot handles the long, boring middle of the flight, not the emergency.</p>
+
+  <h2>Where human judgment must remain</h2>
+  <p>Some decisions are too big, too final, or too strange to hand to a machine. In these cases, AI can suggest, but a human should decide:</p>
+  <ul>
+    <li><b>Critical systems:</b> shutting down a payment server, a hospital system, or a factory controller can cause more harm than the attack itself.</li>
+    <li><b>Actions you cannot undo:</b> wiping a machine or deleting data also destroys evidence that investigators may need.</li>
+    <li><b>New and unclear attacks:</b> a zero-day does not match any known pattern, so there is nothing for the AI to copy. Even Velisaris (2025) says this is where human analysts take command.</li>
+    <li><b>Decisions about people and the law:</b> accusing an employee of insider theft, or deciding when to tell customers and regulators about a breach, needs human responsibility. An AI cannot be held accountable.</li>
+    <li><b>Business trade-offs:</b> taking a shopping website offline during its biggest sale is a business call, not just a security one.</li>
+  </ul>
+  <p>The airline comparison also carries a warning that the IBM article does not mention. A Federal Aviation Administration report found that pilots sometimes rely too much on automation and can be slow to step in when it goes wrong (Federal Aviation Administration [FAA], 2013). In over half of the accidents it reviewed, pilots were out of the control loop and not ready to take over (FAA, 2013). The report's fix was clear: responsibility stays with the pilots at all times, and they need regular hands-on practice (FAA, 2013).</p>
+  <p>The same danger applies to SOC pilots. If analysts only watch a dashboard for months, they may be rusty on the day a zero-day finally arrives. A human who is "in charge" but out of practice is not real oversight.</p>
+
+  <h2>What if the asset information is wrong?</h2>
+  <p>This is the weakest point in the whole model. If automation fails without context, then the AI is only as good as the asset information it receives.</p>
+  <p>Look at how ATOM decides. It concludes a device is a workstation because its name and network location look like a typical workstation (Velisaris, 2025). That is a smart guess, but it is still a guess. Real networks are messy: a server may have a laptop-style name from years ago, a device may be missing from the list, or two databases may disagree.</p>
+  <p>When the information is wrong, two bad things can happen:</p>
+  <ol>
+    <li><b>The AI treats a critical server like a laptop.</b> It isolates the device and the business goes down. The AI causes the outage, not the attacker.</li>
+    <li><b>The AI treats a real threat as unimportant, or cannot find the device at all.</b> It holds back, and the attack spreads. Unknown devices are exactly where attackers like to hide.</li>
+  </ol>
+  <p>This is why government security agencies treat the asset list as a foundation, not an extra. In 2025, the U.S. Cybersecurity and Infrastructure Security Agency, together with the NSA, FBI, and agencies from five other countries, published guidance on building and maintaining asset inventories. It says a complete inventory is essential for identifying and protecting critical assets, lowering the risk of incidents, and keeping services running (Cybersecurity and Infrastructure Security Agency [CISA], 2025). That guidance targets industrial systems, but the lesson fits any SOC: you cannot protect, or automate, what you do not know you have.</p>
+  <p>So what should a responsible SOC do? A few simple rules:</p>
+  <ul>
+    <li><b>When unsure, ask a human:</b> if asset data is missing or conflicting, the AI should not take disruptive action.</li>
+    <li><b>Try the gentler option first:</b> watch closely, block one connection, or force a re-login before shutting anything down.</li>
+    <li><b>Check more than one source:</b> IBM's idea of asking several tools is a good start, but the answers should agree before the AI acts.</li>
+    <li><b>Treat "unknown" as a warning:</b> a device nobody can identify deserves attention, not automatic trust.</li>
+    <li><b>Keep the inventory alive:</b> give it an owner and update it whenever systems change (CISA, 2025).</li>
+  </ul>
+
+  <h2>So, is it realistic and responsible?</h2>
+  <p>My verdict: <b>the SOC pilot model is realistic as a goal, and responsible only with guardrails.</b></p>
+  <p>It is realistic because AI is already good at the boring, repetitive work that burns out analysts. IBM's ATOM shows that agents can gather context and choose a response the way a junior analyst would (Velisaris, 2025).</p>
+  <p>It is responsible only if four things are in place. First, clear limits on what the AI may do alone. Second, human approval for anything high-impact or irreversible. Third, accurate and current asset information. Fourth, SOC pilots who stay in practice instead of just watching screens. Airlines learned that last lesson the hard way (FAA, 2013), and security teams should not have to learn it again.</p>
+
+  <h2>My reflection: how do I become the pilot, not the passenger?</h2>
+  <p>As a computer science student, this article made me think about my own future. If AI takes over the routine work, the job of "person who closes alerts all day" will shrink. To be a SOC pilot instead, I think I need these skills:</p>
+  <ol>
+    <li><b>Strong fundamentals:</b> I need to really understand networks, operating systems, and how attacks work. Without this, I cannot tell when the AI is wrong.</li>
+    <li><b>Incident response and threat hunting:</b> pilots handle the emergencies, so I need to practice investigating attacks that do not follow a script.</li>
+    <li><b>Knowing the business:</b> I should learn which systems matter most and why, because that is the context AI often lacks.</li>
+    <li><b>Scripting and automation:</b> I already use Python, and I want to use it to build, test, and fix playbooks and AI agents instead of being replaced by them.</li>
+    <li><b>Understanding how AI fails:</b> I need to know how agents make decisions, when they guess, and how attackers might trick them.</li>
+    <li><b>Care with data:</b> since everything depends on asset information, I should treat keeping inventories accurate as real security work, not boring admin.</li>
+    <li><b>Calm thinking and clear communication:</b> in a crisis, I must make decisions under pressure and explain them to managers who are not technical.</li>
+  </ol>
+  <p>Most of all, I need to keep practicing with my own hands. Pilots train in flight simulators so they are ready when the autopilot fails (FAA, 2013). For me, that means home labs, capture-the-flag challenges, and attack simulations.</p>
+  <p>AI will not replace the analyst who understands <i>why</i> something is happening. It will replace the analyst who only clicks "close." My goal is to be the first kind.</p>
+
+  <h2>References</h2>
+  <div class="refs">
+    <p>Cybersecurity and Infrastructure Security Agency. (2025, August 13). <i>Foundations for OT cybersecurity: Asset inventory guidance for owners and operators</i>. <a href="https://www.cisa.gov/resources-tools/resources/foundations-ot-cybersecurity-asset-inventory-guidance-owners-and-operators" target="_blank" rel="noopener">https://www.cisa.gov/resources-tools/resources/foundations-ot-cybersecurity-asset-inventory-guidance-owners-and-operators</a></p>
+    <p>Federal Aviation Administration. (2013). <i>Operational use of flight path management systems: Final report of the Performance-based operations Aviation Rulemaking Committee/Commercial Aviation Safety Team Flight Deck Automation Working Group</i>. <a href="https://www.faa.gov/aircraft/air_cert/design_approvals/human_factors/media/OUFPMS_Report.pdf" target="_blank" rel="noopener">https://www.faa.gov/aircraft/air_cert/design_approvals/human_factors/media/OUFPMS_Report.pdf</a></p>
+    <p>Velisaris, J. (2025, May 8). <i>How agentic AI enables an autonomous SOC with minimal human involvement</i>. IBM. <a href="https://www.ibm.com/think/insights/agentic-ai-enables-autonomous-soc" target="_blank" rel="noopener">https://www.ibm.com/think/insights/agentic-ai-enables-autonomous-soc</a></p>
+  </div>
+
+</main>
+
+</body>
+</html>
